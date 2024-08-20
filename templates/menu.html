@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenido, {{ user['nombre'] }}</h1>
+        <img src="{{ user['foto'] }}" alt="Foto de perfil" class="profile-pic">
+        <nav>
+            <ul>
+                <li><a href="#">Nuevo</a></li>
+                <li>
+                    <!-- Formulario para solicitar asistencia -->
+                    <form action="{{ url_for('asistencia') }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="lider" value="{{ user['lider'] }}">
+                        <button type="submit">Asistencia</button>
+                    </form>
+                </li>
+                <li><a href="{{ url_for('logout') }}">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+</body>
+</html>
