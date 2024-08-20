@@ -1,3 +1,4 @@
+/* Estilos generales */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -5,36 +6,48 @@ body {
     padding: 0;
 }
 
+/* Contenedor principal */
 .container {
-    width: 80%;
+    width: 90%;
+    max-width: 800px;
     margin: auto;
     overflow: hidden;
+    padding: 20px;
 }
 
+/* Formularios */
 form {
-    max-width: 300px;
-    margin: 50px auto;
+    max-width: 100%;
+    margin: 0 auto;
     padding: 20px;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Etiquetas de formularios */
 form label {
     display: block;
     margin-bottom: 8px;
 }
 
-form input {
-    width: calc(100% - 22px);
+/* Campos de entrada */
+form input[type="email"], 
+form input[type="password"],
+form input[type="text"],
+form input[type="checkbox"] {
+    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
+/* Botón de formulario */
 form button {
-    padding: 10px 20px;
+    width: 100%;
+    padding: 10px;
     background: #007bff;
     color: #fff;
     border: none;
@@ -46,6 +59,7 @@ form button:hover {
     background: #0056b3;
 }
 
+/* Navegación */
 nav ul {
     list-style: none;
     padding: 0;
@@ -56,24 +70,27 @@ nav ul li {
     margin-right: 20px;
 }
 
+/* Imagen de perfil */
 .profile-pic {
     width: 100px;
     height: 100px;
     border-radius: 50%;
 }
- 
 
-
-h1 {
+/* Títulos */
+h1, h2 {
     text-align: center;
+    margin: 20px 0;
 }
 
+/* Lista de asistencia */
 .asistencia-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
+/* Elementos de asistencia */
 .asistencia-item {
     display: flex;
     flex-direction: column;
@@ -84,6 +101,7 @@ h1 {
     background-color: #f9f9f9;
 }
 
+/* Imagen de asistencia */
 .asistencia-pic {
     display: block;
     margin: 0 auto 10px;
@@ -93,6 +111,7 @@ h1 {
     object-fit: cover;
 }
 
+/* Detalles de asistencia */
 .asistencia-details {
     margin-bottom: 10px;
 }
@@ -101,10 +120,7 @@ h1 {
     margin-bottom: 5px;
 }
 
-input[type="checkbox"] {
-    margin: 10px 0;
-}
-
+/* Enlaces */
 a {
     display: inline-block;
     margin-top: 20px;
@@ -115,4 +131,34 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 768px) {
+    /* Ajustar contenedor y formularios para pantallas pequeñas */
+    .container {
+        width: 95%;
+        padding: 10px;
+    }
+
+    form {
+        padding: 15px;
+    }
+
+    form input[type="email"], 
+    form input[type="password"],
+    form input[type="text"],
+    form input[type="checkbox"] {
+        margin-bottom: 15px;
+    }
+
+    form button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .profile-pic {
+        width: 80px;
+        height: 80px;
+    }
 }
