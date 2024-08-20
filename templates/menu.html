@@ -10,16 +10,16 @@
         <h1>Bienvenido, {{ user['nombre'] }}</h1>
         <img src="{{ user['foto'] }}" alt="Foto de perfil" class="profile-pic">
         <nav>
-            <ul>
-                <li><a href="#">Nuevo</a></li>
+            <ul class="menu-list">
+                <li><a href="{{ url_for('nuevo') }}" class="button">Nuevo</a></li>
                 <li>
                     <!-- Formulario para solicitar asistencia -->
-                    <form action="{{ url_for('asistencia') }}" method="POST" style="display: inline;">
+                    <form action="{{ url_for('asistencia') }}" method="POST" class="form-inline">
                         <input type="hidden" name="lider" value="{{ user['lider'] }}">
-                        <button type="submit">Asistencia</button>
+                        <button type="submit" class="button">Asistencia</button>
                     </form>
                 </li>
-                <li><a href="{{ url_for('logout') }}">Salir</a></li>
+                <li><a href="{{ url_for('logout') }}" class="button">Salir</a></li>
             </ul>
         </nav>
     </div>
