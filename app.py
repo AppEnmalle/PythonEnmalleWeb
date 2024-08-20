@@ -87,6 +87,10 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
 
+@app.route('/nuevo')
+def nuevo():
+    return render_template('nuevo.html')
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Usa el puerto proporcionado por el entorno
     app.run(host='0.0.0.0', port=port, debug=False)  # Desactiva el modo debug para producción
