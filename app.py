@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import requests
+import os
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Cambia esto por una clave secreta más segura
+app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # Usa una clave secreta más segura en producción
 
 API_LOGIN_URL = 'https://apirestnodeenmalle.onrender.com/acceso/login'
 API_ASISTENCIA_URL = 'https://apirestnodeenmalle.onrender.com/celula/listado'
@@ -57,7 +58,6 @@ def asistencia():
     else:
         return "Error al obtener asistencia", response.status_code
 
-
 @app.route('/guardar_asistencia', methods=['POST'])
 def guardar_asistencia():
     if 'user' not in session:
@@ -88,4 +88,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))  # Usa el puerto proporcionado por el entorno
+    app.run(host='0.0.0.0', port=port, debug=False)  # Desactiva el modo debug para producción
