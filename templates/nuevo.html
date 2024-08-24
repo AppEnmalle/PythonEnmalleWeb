@@ -2,13 +2,127 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nuevo</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Registro</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script>
+        function validateNumberInput(event) {
+            const input = event.target;
+            // Limita la longitud del campo a 10 dígitos
+            if (input.value.length > 10) {
+                input.value = input.value.slice(0, 10);
+            }
+        }
+    </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Nuevo</h1>
-        <p>Esta es la página de "Nuevo".</p>
+    <div class="container mt-5">
+        <h2>Nuevo Registro</h2>
+        {% if mensaje %}
+            <div class="alert alert-success" role="alert">
+                {{ mensaje }}
+            </div>
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        <form action="{{ url_for('nuevo') }}" method="POST">
+            <div class="form-group">
+                <label for="cedula_identidad">Cédula de Identidad</label>
+                <input type="text" class="form-control" id="cedula_identidad" name="cedula_identidad" maxlength="10" required oninput="validateNumberInput(event)">
+            </div>
+            <div class="form-group">
+                <label for="primer_nombre">Primer Nombre</label>
+                <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="segundo_nombre">Segundo Nombre</label>
+                <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre">
+            </div>
+            <div class="form-group">
+                <label for="apellido_paterno">Apellido Paterno</label>
+                <input type="text" class="form-control" id="apellido_paterno" name="apellido_paterno" required>
+            </div>
+            <div class="form-group">
+                <label for="apellido_materno">Apellido Materno</label>
+                <input type="text" class="form-control" id="apellido_materno" name="apellido_materno">
+            </div>
+            <div class="form-group">
+                <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+            </div>
+            <div class="form-group">
+                <label for="estado_civil">Estado Civil</label>
+                <select class="form-control" id="estado_civil" name="estado_civil" required>
+                    <option value="">Seleccione</option>
+                    <option value="soltero">Soltero</option>
+                    <option value="casado">Casado</option>
+                    <option value="divorciado">Divorciado</option>
+                    <option value="viudo">Viudo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="barrio">Barrio</label>
+                <select class="form-control" id="barrio" name="barrio" required>
+                    <option value="">Seleccione un barrio</option>
+                    {% for sector in barrios %}
+                        <optgroup label="{{ sector.sq_sector }}">
+                            <option value="{{ sector.bq_id_barrio }}">{{ sector.bq_barrio }}</option>
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="calle_principal">Calle Principal</label>
+                <input type="text" class="form-control" id="calle_principal" name="calle_principal" required>
+            </div>
+            <div class="form-group">
+                <label for="calle_secundaria">Calle Secundaria</label>
+                <input type="text" class="form-control" id="calle_secundaria" name="calle_secundaria">
+            </div>
+            <div class="form-group">
+                <label for="numero_casa">Número de Casa</label>
+                <input type="text" class="form-control" id="numero_casa" name="numero_casa" required>
+            </div>
+            <div class="form-group">
+                <label for="telefono_casa">Teléfono de Casa</label>
+                <input type="text" class="form-control" id="telefono_casa" name="telefono_casa" maxlength="10" oninput="validateNumberInput(event)">
+            </div>
+            <div class="form-group">
+                <label for="telefono_oficina">Teléfono de Oficina</label>
+                <input type="text" class="form-control" id="telefono_oficina" name="telefono_oficina" maxlength="10" oninput="validateNumberInput(event)">
+            </div>
+            <div class="form-group">
+                <label for="telefono_celular">Teléfono Celular</label>
+                <input type="text" class="form-control" id="telefono_celular" name="telefono_celular" maxlength="10" required oninput="validateNumberInput(event)">
+            </div>
+            <div class="form-group">
+                <label for="invitado_x">Invitado por</label>
+                <input type="text" class="form-control" id="invitado_x" name="invitado_x">
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="reset" class="btn btn-secondary">Limpiar</button>
+        </form>
     </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Inicializar Select2 -->
+    <script>
+        $(document).ready(function() {
+            $('#barrio').select2({
+                placeholder: 'Seleccione un barrio',
+                allowClear: true
+            });
+        });
+    </script>
+
 </body>
 </html>

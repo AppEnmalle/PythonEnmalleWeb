@@ -2,26 +2,89 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Bienvenido, {{ user['nombre'] }}</h1>
-        <img src="{{ user['foto'] }}" alt="Foto de perfil" class="profile-pic">
-        <nav>
-            <ul class="menu-list">
-                <li><a href="{{ url_for('nuevo') }}" class="button">Nuevo</a></li>
-                <li>
-                    <!-- Formulario para solicitar asistencia -->
-                    <form action="{{ url_for('asistencia') }}" method="POST" class="form-inline">
-                        <input type="hidden" name="lider" value="{{ user['lider'] }}">
-                        <button type="submit" class="button">Asistencia</button>
-                    </form>
-                </li>
-                <li><a href="{{ url_for('logout') }}" class="button">Salir</a></li>
-            </ul>
+    <!--Main Navigation-->
+    <header>
+        <!-- Navbar -->
+        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+            <!-- Container wrapper -->
+            <div class="container-fluid">
+                <!-- Toggle button -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#sidebarMenu"
+                    aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <!-- Brand -->
+                <a class="navbar-brand" href="#">
+                    <img src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp" height="25" alt="MDB Logo" loading="lazy" />
+                </a>
+
+                <!-- Right links -->
+                <ul class="navbar-nav ms-auto d-flex flex-row">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ user['foto'] }}" class="rounded-circle" height="30" alt="Avatar" loading="lazy" />
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- Container wrapper -->
         </nav>
-    </div>
+        <!-- Navbar -->
+
+        <!-- Sidebar -->
+        <nav id="sidebarMenu" class="collapse d-lg-block sidebar bg-white">
+            <div class="position-sticky">
+                <div class="list-group list-group-flush mx-3 mt-4">
+                    <!-- Collapse 1 -->
+                    <a class="list-group-item list-group-item-action py-2 ripple" aria-current="true" href="#collapseExample1" data-toggle="collapse"
+                    aria-expanded="true" aria-controls="collapseExample1" style="font-weight: bold; font-size: 1.2em; color: #003366;">
+                        <i class="fas fa-fw me-3"></i><span>CELULA</span>
+                    </a>
+                    <!-- Collapsed content -->
+                    <ul id="collapseExample1" class="collapse show list-group list-group-flush">
+                        <li class="list-group-item py-1">
+                            <a href="{{ url_for('nuevo') }}" class="text-reset">Nuevo</a>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <form action="{{ url_for('asistencia') }}" method="POST" class="form-inline">
+                                <input type="hidden" name="lider" value="{{ user['lider'] }}">
+                                <button type="submit" class="btn btn-light">Asistencia</button>
+                            </form>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <a href="#" class="text-reset">Cumpleaños</a>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <a href="#" class="text-reset">Estadisticas</a>
+                        </li>
+                    </ul>
+                    <!-- Collapse 1 -->
+                </div>
+            </div>
+        </nav>
+        <!-- Sidebar -->
+    </header>
+    <!--Main Navigation-->
+
+    
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

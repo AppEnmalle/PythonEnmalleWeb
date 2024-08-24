@@ -1,0 +1,13 @@
+Aqui deployo todo lo que se ve a RENDER enmalleapp
+el repositorio github es de cristian.ma.ev@gmail.com
+
+desde la maquina 2 del local 
+
+git add .
+git commit -m "Varios Cambio etapa inicial"
+git push origin master
+
+
+
+
+

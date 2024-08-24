@@ -8,6 +8,8 @@ app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # Usa una clave
 API_LOGIN_URL = 'https://apirestnodeenmalle.onrender.com/acceso/login'
 API_ASISTENCIA_URL = 'https://apirestnodeenmalle.onrender.com/celula/listado'
 API_REGISTRO_ASISTENCIA_URL = 'https://apirestnodeenmalle.onrender.com/celula/registro/asistencia'
+API_REGISTRO_NUEVO_URL = 'https://apirestnodeenmalle.onrender.com/celula/nuevo/creyente'
+API_BARRIOS_URL = 'https://apirestnodeenmalle.onrender.com/celula/listado/sector'
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -87,9 +89,56 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
 
-@app.route('/nuevo')
+@app.route('/nuevo', methods=['GET', 'POST'])
 def nuevo():
-    return render_template('nuevo.html')
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    lider = session['user']['lider']
+    sexo = session['user']['sexo']
+
+    # Obtener los datos de barrios y sectores desde la API
+    response = requests.get(API_BARRIOS_URL)
+    if response.status_code == 200:
+        barrios_data = response.json()
+    else:
+        barrios_data = []
+
+    if request.method == 'POST':
+        datos = {
+            'cedula_identidad': request.form.get('cedula_identidad'),
+            'primer_nombre': request.form.get('primer_nombre'),
+            'segundo_nombre': request.form.get('segundo_nombre'),
+            'apellido_paterno': request.form.get('apellido_paterno'),
+            'apellido_materno': request.form.get('apellido_materno'),
+            'fecha_nacimiento': request.form.get('fecha_nacimiento'),
+            'estado_civil': request.form.get('estado_civil'),
+            'sexo': sexo,
+            'barrio': request.form.get('barrio'),  # Aquí se enviará el id del barrio seleccionado
+            'calle_principal': request.form.get('calle_principal'),
+            'calle_secundaria': request.form.get('calle_secundaria'),
+            'numero_casa': request.form.get('numero_casa'),
+            'telefono_casa': request.form.get('telefono_casa'),
+            'telefono_oficina': request.form.get('telefono_oficina'),
+            'telefono_celular': request.form.get('telefono_celular'),
+            'id_lider': lider,
+            'invitado_x': request.form.get('invitado_x')
+        }
+
+        try:
+            response = requests.post(API_REGISTRO_NUEVO_URL, json=datos)
+            response.raise_for_status()
+
+            if response.status_code == 200:
+                return render_template('nuevo.html', mensaje='Registro guardado correctamente.', barrios=barrios_data)
+            else:
+                return render_template('nuevo.html', mensaje='Error al guardar el registro.', error=response.text, barrios=barrios_data)
+        except requests.RequestException as e:
+            return render_template('nuevo.html', mensaje='Error al enviar la solicitud.', error=str(e), barrios=barrios_data)
+
+    return render_template('nuevo.html', barrios=barrios_data)
+
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Usa el puerto proporcionado por el entorno
