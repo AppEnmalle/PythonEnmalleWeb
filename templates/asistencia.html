@@ -2,76 +2,91 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistencia</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Agrega el enlace a la hoja de estilos de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Agrega tu hoja de estilos personalizada -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='asistencia.css') }}">
+    
     <script>
-        function confirmSave() {
-            const totalItems = {{ total_items }};
-            const selectedItems = document.querySelectorAll('input[name="asistencia_ids"]:checked').length;
-            
-            if (selectedItems === 0) {
-                alert('Debe seleccionar al menos un ID para registrar la asistencia.');
-                return false;
-            }
+            function confirmSave() {
+                const totalItems = {{ total_items }};
+                const selectedItems = document.querySelectorAll('input[name="asistencia_ids"]:checked').length;
 
-            const confirmMessage = `Total de IDs: ${totalItems}\nIDs seleccionados: ${selectedItems}\n\n¿Está seguro de registrar la asistencia?`;
-            return confirm(confirmMessage);
-        }
-
-        function handleFormSubmit(event) {
-            event.preventDefault(); // Previene el envío del formulario tradicional
-
-            const form = event.target;
-            const formData = new FormData(form);
-
-            if (!confirmSave()) {
-                return; // Si el usuario cancela, no enviamos el formulario
-            }
-
-            fetch(form.action, {
-                method: form.method,
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message); // Muestra el mensaje del servidor
-                if (data.status === 'success') {
-                    window.location.href = "{{ url_for('menu') }}"; // Redirige al menú
+                if (selectedItems === 0) {
+                    alert('Debe seleccionar al menos un ID para registrar la asistencia.');
+                    return false;
                 }
-            })
-            .catch(error => {
-                alert('Ocurrió un error: ' + error);
-            });
-        }
+
+                const confirmMessage = `Total de IDs: ${totalItems}\nIDs seleccionados: ${selectedItems}\n\n¿Está seguro de registrar la asistencia?`;
+                return confirm(confirmMessage);
+            }
+
+            function handleFormSubmit(event) {
+                event.preventDefault(); // Previene el envío del formulario tradicional
+
+                const form = event.target;
+                const formData = new FormData(form);
+
+                if (!confirmSave()) {
+                    return; // Si el usuario cancela, no enviamos el formulario
+                }
+
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message); // Muestra el mensaje del servidor
+                    if (data.status === 'success') {
+                        window.location.href = "{{ url_for('menu') }}"; // Redirige al menú
+                    }
+                })
+                .catch(error => {
+                    alert('Ocurrió un error: ' + error);
+                });
+            }
+
     </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Datos de Asistencia</h1>
+    <div class="container mt-4">
+        <h1 class="mb-4">Datos de Asistencia</h1>
 
         {% if mensaje %}
-            <p>{{ mensaje }}</p>
+            <div class="alert alert-info">
+                {{ mensaje }}
+            </div>
         {% else %}
             <form action="{{ url_for('guardar_asistencia') }}" method="POST" onsubmit="handleFormSubmit(event)">
-                <div class="asistencia-list">
+                <div class="list-group">
                     {% for item in asistencia %}
-                    <div class="asistencia-item">
-                        <img src="{{ item['foto'] }}" alt="Foto del creyente" class="asistencia-pic">
+                    <div class="list-group-item d-flex align-items-center">
+                        <img src="{{ item['foto'] if item['foto'] else url_for('static', filename='default-avatar.png') }}" alt="Foto del creyente" class="asistencia-pic mr-3">
                         <div class="asistencia-details">
                             <div><strong>ID:</strong> {{ item['id_creyente'] }}</div>
                             <div><strong>Nombre:</strong> {{ item['nombre'] }}</div>
                             <div><strong>Fecha de Nacimiento:</strong> {{ item['fecha_nac'] }}</div>
                         </div>
-                        <input type="checkbox" name="asistencia_ids" value="{{ item['id_creyente'] }}">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="asistencia_ids" value="{{ item['id_creyente'] }}">
+                            <label class="form-check-label"></label>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
                 
-                <button type="submit">GUARDAR</button>
+                <button type="submit" class="btn btn-primary mt-3">GUARDAR</button>
             </form>
         {% endif %}
-        <a href="{{ url_for('menu') }}">Regresar al menú</a>
+        <a href="{{ url_for('menu') }}" class="btn btn-secondary mt-3">Regresar al menú</a>
     </div>
+    <!-- Agrega los scripts de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         document.querySelectorAll('input[name="asistencia_ids"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {

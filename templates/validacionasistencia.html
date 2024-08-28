@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validando Asistencia de su Célula</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn-custom-red {
+            background-color: #dc3545; /* Color rojo Bootstrap */
+            border-color: #dc3545;
+            color: white; /* Texto blanco */
+        }
+        .btn-custom-red:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .btn-lg-custom {
+            font-size: 1rem;
+            padding: 1.75rem 2.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-4 text-danger">¡ATENCIÓN!</h1>
+        </div>
+
+        <!-- Main content -->
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Lea por favor</h4>
+            <p>Usted tiene un registro de asistencia pendiente que corresponde a la célula del día: <strong>{{ fecha }}</strong></p>
+            <p>Está obligado a registrar primero la asistencia pendiente.</p>
+        </div>
+
+        <!-- Botones alineados -->
+        <div class="d-flex justify-content-center mt-4">
+            <!-- Formulario para el botón 'Sí' -->
+            <form action="{{ url_for('asistencia') }}" method="post" class="mr-2">
+                <button type="submit" class="btn btn-primary btn-lg btn-lg-custom">Sí</button>
+            </form>
+
+            <!-- Enlace para el botón 'No' -->
+            <a href="{{ url_for('menu') }}" class="btn btn-custom-red btn-lg btn-lg-custom">No</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

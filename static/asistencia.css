@@ -1,0 +1,33 @@
+        .asistencia-pic {
+            border-radius: 50%; /* Hacer la imagen circular */
+            width: 80px; /* Tamaño de la imagen */
+            height: 80px; /* Tamaño de la imagen */
+            object-fit: cover; /* Asegura que la imagen cubra el área sin distorsión */
+        }
+        .asistencia-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .asistencia-details {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .asistencia-item .form-check {
+            margin: 0;
+        }
+    
+        /* Asumiendo que los checkboxes tienen la clase .form-check-input */
+.form-check-input {
+    transform: scale(1.5); /* Ajusta el valor para cambiar el tamaño */
+}
+
+/* Imagen de reemplazo si no hay foto */
+.asistencia-pic {
+    background-image: url('{{ url_for('static', filename='default-avatar.png') }}');
+    background-size: cover; /* Asegura que la imagen cubra el área */
+    background-position: center;
+}
