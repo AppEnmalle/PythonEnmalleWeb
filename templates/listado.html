@@ -3,13 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web</title>
-   
+    <title>Listado de Creyentes</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+    <style>
+        .card-img-circle {
+            width: 100px; /* Tamaño deseado */
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%; /* Hace la imagen circular */
+            margin-right: 15px; /* Espacio entre la imagen y el texto */
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .card-header .info {
+            max-width: calc(100% - 120px); /* Espacio reservado para la imagen */
+        }
+        .card-title {
+            font-size: 0.95rem; /* Tamaño de letra para el nombre */
+            margin-bottom: 0.5rem;
+        }
+        .card-text {
+            font-size: 0.875rem; /* Tamaño de letra para detalles */
+        }
+        .card-text .small-text {
+            font-size: 0.35rem; /* Tamaño de letra para el ID Creyente */
+        }
+        .btn-sm {
+            font-size: 0.75rem; /* Tamaño de letra para los botones pequeños */
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a mi página web</h1>
-    </header>
-   
+    <div class="container mt-4">
+        <h1 class="mb-4">Listado de Creyentes</h1>
+        <div class="row">
+            {% for item in data %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <img src="{{ item['ImageUrl'] if item['ImageUrl'] not in ['X', ''] else url_for('static', filename='default-avatar.png') }}" class="card-img-circle" alt="Foto">
+                        <div class="info">
+                            <h5 class="card-title">{{ item[''][2] if item[''][2] else 'N/A' }} {{ item[''][3] if item[''][3] else 'N/A' }}</h5>
+                            <p class="card-text small-text"><strong>ID Creyente:</strong> {{ item[''][0].split(': ')[1] if item[''][0] else 'N/A' }}</p>                            
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong></strong> {{ item[''][1] if item[''][1] else 'N/A' }}<br>
+                            <strong>Cédula:</strong> {{ item[''][4].split(': ')[1] if item[''][4] else 'N/A' }}<br>
+                            <strong>Fecha Nacimiento:</strong> {{ item[''][5].split(': ')[1] if item[''][5] else 'N/A' }}<br>
+                            <strong>Estado Civil:</strong> {{ item[''][6].split(': ')[1] if item[''][6] else 'N/A' }}<br>
+                            <strong>Barrio:</strong> {{ item[''][7].split(': ')[1] if item[''][7] else 'N/A' }}<br>
+                            <strong>Calle P:</strong> {{ item[''][8].split(': ')[1] if item[''][8] else 'N/A' }}<br>
+                            <strong>Calle S:</strong> {{ item[''][9].split(': ')[1] if item[''][9] else 'N/A' }}<br>
+                            <strong># Casa:</strong> {{ item[''][10].split(': ')[1] if item[''][10] else 'N/A' }}<br>
+                            <strong>Telf. Casa:</strong> {{ item[''][11].split(': ')[1] if item[''][11] else 'N/A' }}<br>
+                            <strong>Telf. Oficina:</strong> {{ item[''][12].split(': ')[1] if item[''][12] else 'N/A' }}<br>
+                            <strong>Telf. Movil:</strong> {{ item[''][13].split(': ')[1] if item[''][13] else 'N/A' }}<br>
+                            <strong>Fecha Registro:</strong> {{ item[''][14].split(': ')[1] if item[''][14] else 'N/A' }}
+                        </p>
+                        <a href="{{ url_for('editar_creyente', id=item[''][0].split(': ')[1]) }}" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="{{ url_for('ver_foto', id=item[''][0].split(': ')[1]) }}" class="btn btn-secondary btn-sm">Ver Foto</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <a href="{{ url_for('menu') }}" class="btn btn-secondary mt-3">Regresar al menú</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
+
 </html>

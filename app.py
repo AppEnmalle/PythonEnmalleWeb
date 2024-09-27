@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from datetime import datetime
 import requests
 import os
@@ -6,12 +6,18 @@ import os
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # Usa una clave secreta más segura en producción
 
+creyentes = []  # Asegúrate de tener una lista de creyentes
+
 API_LOGIN_URL = 'https://apirestnodeenmalle.onrender.com/acceso/login'
 API_ASISTENCIA_URL = 'https://apirestnodeenmalle.onrender.com/celula/listado'
 API_REGISTRO_ASISTENCIA_URL = 'https://apirestnodeenmalle.onrender.com/celula/registro/asistencia/web'
 API_REGISTRO_NUEVO_URL = 'https://apirestnodeenmalle.onrender.com/celula/nuevo/creyente'
 API_BARRIOS_URL = 'https://apirestnodeenmalle.onrender.com/celula/listado/sector'
 API_CONTROL_REGISTRO_ASISTENCIA_URL = 'https://apirestnodeenmalle.onrender.com/celula/control/registro/asistencia'
+API_URL_LISTADO = 'https://apirestnodeenmalle.onrender.com/celula/listado/integrantes'
+API_URL_ACTUALIZACION = 'https://apirestnodeenmalle.onrender.com/celula/actualizacion/creyente'
+API_URL_CONSULTA = 'https://apirestnodeenmalle.onrender.com/celula/consulta/creyente'
+API_UPDATE_CREYENTE_URL = 'https://apirestnodeenmalle.onrender.com/celula/actualizacion/creyente'
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -54,12 +60,12 @@ def asistencia():
         lider = session['user']['lider']
         lider_str = str(lider)
         request.method = 'POST'
-        print ("metodo request JJJJ", request.method)
+        #print ("metodo request JJJJ", request.method)
 
         response = requests.post(API_ASISTENCIA_URL, json={'lider': lider_str})
-        print ("//////////////////////////////////")
-        print (lider)
-        print (response)
+        #print ("//////////////////////////////////")
+        #print (lider)
+        #print (response)
 
         if response.status_code == 200:
             asistencia_data = response.json()
@@ -95,11 +101,11 @@ def guardar_asistencia():
         return redirect(url_for('asistencia'))
 
     trama = f"{lider};{celula}:{','.join(ids_seleccionados)},"
-    print (trama)
+    #print (trama)
 
     # Enviar la trama a la API de registro de asistencia
     response = requests.post(API_REGISTRO_ASISTENCIA_URL, json={'trama': trama})
-    print (response.status_code)
+    #print (response.status_code)
     if response.status_code == 200:
         # Devuelve un mensaje de éxito en formato JSON
         return {'message': 'Se registró correctamente su asistencia', 'status': 'success'}
@@ -161,19 +167,11 @@ def nuevo():
 
     return render_template('nuevo.html', barrios=barrios_data)
 
-@app.route('/listado')
-def listado():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    user = session['user']
-    return render_template('listado.html', user=user)
+  
 
 @app.route('/estadistica')
 def estadistica():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    user = session['user']
-    return render_template('estadistica.html', user=user)
+    return render_template('estadistica.html')
 
 @app.route('/cumpleaños')
 def cumpleaños():
@@ -185,8 +183,8 @@ def cumpleaños():
 
 @app.route('/validacionasistencia', methods=['GET', 'POST'])
 def validacionasistencia():
-    print("Entro////////AQUI")
-    print(request.method)
+    #print("Entro////////AQUI")
+    #print(request.method)
     
     if request.method == 'POST':
         # Obtener datos de la sesión
@@ -198,27 +196,26 @@ def validacionasistencia():
 
         lider_str = str(lider)
         celula_str = str(celula)
-        print("Lider:", lider_str)
-        print("Celula:", celula_str)
+        #print("Lider:", lider_str)
+        #print("Celula:", celula_str)
 
         try:
             response = requests.post(API_CONTROL_REGISTRO_ASISTENCIA_URL, json={'lider': lider_str, 'celula': celula_str})
             response.raise_for_status()
-            print(response)
+            #print(response)
             data = response.json()
-            print("Datos recibidos de la API:", data)
-
-            # Asegúrate de que `data` es una lista y accede al primer elemento
+            #print("Datos recibidos de la API:", data)
+            
             if isinstance(data, list):
                 if len(data) == 0:
-                    print("Fecha está vacía, redirigiendo a asistencia")
+                    #print("Fecha está vacía, redirigiendo a asistencia")
                     return redirect(url_for('asistencia'))
                 else:
                     fecha = list(data[0].values())[0]  # Obtén el primer valor del primer diccionario
                     print("Fecha:", fecha)
 
                     if fecha == "Ene_01_1900":
-                        print("Fecha es 'Ene_01_1900', redirigiendo a menu")
+                        #print("Fecha es 'Ene_01_1900', redirigiendo a menu")
                         return redirect(url_for('menu'))
                     else:
                         return render_template('validacionasistencia.html', fecha=fecha)
@@ -229,6 +226,155 @@ def validacionasistencia():
             return f"Error al contactar con la API: {e}"
 
     return render_template('menu.html')
+
+
+
+
+
+@app.route('/listado')
+def listado():
+    lider = session.get('user', {}).get('lider')  # Obtener el valor de 'lider' desde la sesión
+    liderstr = str(lider)
+    if not lider:
+        return "No tienes permiso para ver esta página.", 403  # O redirige a una página de inicio de sesión
+
+    try:
+        response = requests.post(API_URL_LISTADO, json={'lider': liderstr})
+        response.raise_for_status()  # Lanza un error si el código de estado HTTP es 4xx/5xx
+        data = response.json()
+        
+        #print (data)
+        return render_template('listado.html', data=data)
+    except requests.exceptions.RequestException as e:
+        print(f"Error al realizar la solicitud: {e}")
+        return "No se pudo obtener datos de la API.", 500
+    except ValueError as e:
+        print(f"Error al decodificar JSON: {e}")
+        return "Error al procesar los datos de la API.", 500
+        
+
+
+@app.route('/ver_foto/<int:id>')
+def ver_foto(id):
+    #print("ENTRO---------------------------VerFoto")
+    #print (id)
+    lider = session.get('user', {}).get('lider')
+    if not lider:
+        return "No tienes permiso para ver esta página.", 403
+
+    try:
+        response = requests.post(API_URL_LISTADO, json={'lider': lider})
+        response.raise_for_status()
+        data = response.json()
+        record = next((item for item in data if item[''][0].split(': ')[1] == str(id)), None)
+        image_url = record['ImageUrl'] if record else None
+        return render_template('ver_foto.html', image_url=image_url)
+    except requests.exceptions.RequestException as e:
+        print(f"Error al realizar la solicitud: {e}")
+        return "No se pudo obtener datos de la API.", 500
+    except ValueError as e:
+        print(f"Error al decodificar JSON: {e}")
+        return "Error al procesar los datos de la API.", 500
+
+@app.route('/editar_creyente/<int:id>')
+#@app.route('/editar/<id>', methods=['POST'])
+def editar_creyente(id):
+    idcreyente = str(id)
+    # Realizar la solicitud POST a la API
+    response = requests.post(API_URL_CONSULTA, json={'creyente': idcreyente})
+    data = response.json()
+    # Obtener los datos de barrios y sectores desde la API
+    response = requests.get(API_BARRIOS_URL)
+    if response.status_code == 200:
+        barrios_data = response.json()
+    else:
+        barrios_data = []
+    # Renderizar la plantilla con los datos obtenidos
+    return render_template('editar_creyente.html', data=data, barrios=barrios_data)
+
+
+
+
+@app.route('/guardar', methods=['POST'])
+def guardar():
+    # Extraer datos del formulario
+    id_creyente = request.form.get('id')
+    cedula_identidad = request.form.get('cedula_identidad')
+    nombre = request.form.get('nombre')
+    nombre_s = request.form.get('nombre-s')
+    apellido_p = request.form.get('apellido-p')
+    apellido_m = request.form.get('apellido-m')
+    fecha_nacimiento = request.form.get('fecha_nacimiento')
+    estado_civil = request.form.get('estado_civil')
+    barrio = request.form.get('barrio')
+    calle_principal = request.form.get('calle-principal')
+    calle_secundaria = request.form.get('calle-secundaria')
+    numero_casa = request.form.get('numero-casa')
+    telefono_casa = request.form.get('telefono-casa')
+    telefono_oficina = request.form.get('telefono-oficina')
+    telefono_movil = request.form.get('telefono-movil')
+
+    # Verificar que todos los campos necesarios estén presentes
+    if not all([id_creyente, nombre, apellido_p, fecha_nacimiento]):
+        return jsonify({"error": "Por favor, complete todos los campos obligatorios."}), 400
+
+    # Enviar la solicitud POST a la API externa
+    try:
+        response = requests.post(API_UPDATE_CREYENTE_URL, json={
+            'id_creyente': id_creyente,
+            'cedula_identidad': cedula_identidad,
+            'primer_nombre': nombre,
+            'segundo_nombre': nombre_s,
+            'apellido_paterno': apellido_p,
+            'apellido_materno': apellido_m,
+            'fecha_nacimiento': fecha_nacimiento,
+            'estado_civil': estado_civil,
+            'barrio': barrio,
+            'calle_principal': calle_principal,
+            'calle_secundaria': calle_secundaria,
+            'numero_casa': numero_casa,
+            'telefono_casa': telefono_casa,
+            'telefono_oficina': telefono_oficina,
+            'telefono_celular': telefono_movil
+        })
+
+        print("Código de respuesta:", response.status_code)
+        print("Contenido de la respuesta:", response.text)
+
+        if response.status_code == 200:
+            if 'application/json' in response.headers.get('Content-Type', ''):
+                try:
+                    response_data = response.json()
+                    print("Datos procesados:", response_data)
+
+                    # Validar que 'Respuesta' esté en el primer elemento de la lista
+                    if len(response_data) > 0 and 'Respuesta' in response_data[0]:
+                        if response_data[0]['Respuesta'] == "OK":
+                            return jsonify({"Respuesta": "OK"}), 200  # Devuelve JSON
+                        elif response_data[0]['Respuesta'] == "ERROR":
+                            return jsonify({"error": 'Error al guardar el registro: ' + response_data[0].get("message", "Error desconocido.")}), 400
+                        else:
+                            return jsonify({"error": 'Respuesta inesperada de la API: ' + str(response_data)}), 400
+                    else:
+                        return jsonify({"error": 'La respuesta no contiene el campo "Respuesta".'}), 400
+                except ValueError as ve:
+                    print("Error de JSON:", ve)
+                    return jsonify({"error": 'Error al procesar la respuesta de la API.'}), 500
+            else:
+                return jsonify({"error": 'La respuesta no es de tipo JSON.'}), 500
+        else:
+            return jsonify({"error": 'Error en la solicitud: ' + str(response.status_code)}), response.status_code
+
+    except requests.exceptions.HTTPError as http_err:
+        return jsonify({"error": 'Error en la solicitud HTTP: ' + str(http_err)}), 500
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": 'Error de conexión: ' + str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": 'Error inesperado: ' + str(e)}), 500
+
+
+    # Redirigir a la plantilla con mensaje de error
+    # return redirect(url_for('editar_creyente', id=id_creyente))
 
 
 

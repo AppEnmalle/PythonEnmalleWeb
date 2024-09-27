@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Creyente</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function validateNumberInput(event) {
+            const input = event.target;
+            // Limita la longitud del campo a 10 dígitos
+            if (input.value.length > 10) {
+                input.value = input.value.slice(0, 10);
+            }
+        }
+    </script>
+    <style>
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        .container {
+            position: relative;
+        }
+        .form-container {
+            margin-top: 20px;
+            padding: 20px;
+            padding-top: 140px;
+        }
+        .card-img-circle {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .foto-preview-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .foto-preview-container img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 15px;
+        }
+        .foto-preview-container input {
+            width: calc(100% - 120px);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="foto-preview-container">
+            <img id="foto-preview" src="" alt="Foto">
+            <input type="text" class="form-control hidden" id="foto" name="foto" readonly>
+        </div>
+        <h1>Editar Creyente</h1>
+        <form id="edit-form">
+            <input type="hidden" name="id" id="creyente-id">
+            <!-- Campos del formulario -->
+            <div class="form-group">
+                <label for="cedula_identidad">Cédula de Identidad</label>
+                <input type="text" class="form-control" id="cedula" name="cedula_identidad" maxlength="10" oninput="validateNumberInput(event)">
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" readonly value="{{ nombre }}">
+            </div>
+            <div class="form-group">
+                <label for="nombre-s">Nombre Secundario</label>
+                <input type="text" class="form-control" id="nombre-s" name="nombre-s">
+            </div>
+            <div class="form-group">
+                <label for="apellido-p">Apellido Paterno</label>
+                <input type="text" class="form-control" id="apellido-p" name="apellido-p" readonly value="{{ apellido }}">
+            </div>
+            <div class="form-group">
+                <label for="apellido-m">Apellido Materno</label>
+                <input type="text" class="form-control" id="apellido-m" name="apellido-m">
+            </div>
+            <div class="form-group">
+                <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="fecha-nacimiento" name="fecha_nacimiento">
+            </div>
+            <div class="form-group">
+                <label for="estado_civil">Estado Civil</label>
+                <select class="form-control" id="estado-civil" name="estado_civil">
+                    <option value="Soltero/a">Soltero/a</option>
+                    <option value="Casado/a">Casado/a</option>
+                    <option value="Divorciado/a">Divorciado/a</option>
+                    <option value="Viudo/a">Viudo/a</option>
+                    <option value="Union Libre">Unión Libre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="barrio">Barrio</label>
+                <select class="form-control" id="barrio" name="barrio">
+                    <option value="">Seleccione un barrio</option>
+                    {% for sector in barrios %}
+                        <option value="{{ sector.bq_barrio }}">{{ sector.bq_barrio }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="calle-principal">Calle Principal</label>
+                <input type="text" class="form-control" id="calle-principal" name="calle-principal">
+            </div>
+            <div class="form-group">
+                <label for="calle-secundaria">Calle Secundaria</label>
+                <input type="text" class="form-control" id="calle-secundaria" name="calle-secundaria">
+            </div>
+            <div class="form-group">
+                <label for="numero-casa">Número de Casa</label>
+                <input type="text" class="form-control" id="numero-casa" name="numero-casa">
+            </div>
+            <div class="form-group">
+                <label for="telefono-casa">Teléfono Casa</label>
+                <input type="text" class="form-control" id="telefono-casa" name="telefono-casa" maxlength="10" oninput="validateNumberInput(event)">
+            </div>
+            <div class="form-group">
+                <label for="telefono-oficina">Teléfono Oficina</label>
+                <input type="text" class="form-control" id="telefono-oficina" name="telefono-oficina" maxlength="10" oninput="validateNumberInput(event)">
+            </div>
+            <div class="form-group">
+                <label for="telefono-movil">Teléfono Móvil</label>
+                <input type="text" class="form-control" id="telefono-movil" name="telefono-movil" maxlength="10" oninput="validateNumberInput(event)">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <a href="{{ url_for('listado') }}" class="btn btn-secondary mt-3">Regresar al listado</a>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Obtener los datos pasados en el contexto
+            data = {{ data|tojson }};
+
+            // Función para convertir la fecha de mm-dd-yyyy a yyyy-mm-dd
+            function convertToDateInputFormat(dateStr) {
+                if (!dateStr) return '';
+                const [month, day, year] = dateStr.split('-');
+                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            }
+
+            if (data && data.length > 0) {
+                const item = data[0];
+
+                // Asignar valores a los campos del formulario
+                document.getElementById('creyente-id').value = item.Id_Creyente || '';
+                document.getElementById('nombre').value = item.NombreP || '';
+                document.getElementById('nombre-s').value = item.NombreS || '';
+                document.getElementById('apellido-p').value = item.ApellidoP || '';
+                document.getElementById('apellido-m').value = item.ApellidoM || '';
+                document.getElementById('cedula').value = item.Cedula || '';
+                document.getElementById('fecha-nacimiento').value = convertToDateInputFormat(item.Fechanacimiento) || '';
+
+                // Asignar el estado civil recibido
+                const estadoCivil = item.Estadocivil || '';
+                const estadoCivilSelect = document.getElementById('estado-civil');
+                
+                // Verifica si el valor existe en las opciones
+                for (let i = 0; i < estadoCivilSelect.options.length; i++) {
+                    if (estadoCivilSelect.options[i].value === estadoCivil) {
+                        estadoCivilSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+
+                // Configuración del barrio
+                const barrioSelect = document.getElementById('barrio');
+                const barrioName = item.Barrio || '';
+
+                for (let i = 0; i < barrioSelect.options.length; i++) {
+                    if (barrioSelect.options[i].value === barrioName) {
+                        barrioSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+
+                document.getElementById('calle-principal').value = item.Calleprincipal || '';
+                document.getElementById('calle-secundaria').value = item.Callesecundaria || '';
+                document.getElementById('numero-casa').value = item.Numerocasa || '';
+                document.getElementById('telefono-casa').value = item.Telefonoc || '';
+                document.getElementById('telefono-oficina').value = item.Telefono || '';
+                document.getElementById('telefono-movil').value = item.Telefonom || '';
+                document.getElementById('foto').value = item.Foto || '/static/default-avatar.png';
+                document.getElementById('foto-preview').src = item.Foto || '/static/default-avatar.png'; 
+            }
+        });
+
+        document.getElementById('edit-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío predeterminado del formulario
+
+            // Obtener datos del formulario
+            const formData = new FormData(this);
+
+            // Obtener el estado civil y convertirlo a abreviatura
+            const estadoCivil = formData.get('estado_civil');
+            let estadoCivilAbreviado;
+
+            switch (estadoCivil) {
+                case "Soltero/a":
+                    estadoCivilAbreviado = "S";
+                    break;
+                case "Casado/a":
+                    estadoCivilAbreviado = "C";
+                    break;
+                case "Divorciado/a":
+                    estadoCivilAbreviado = "D";
+                    break;
+                case "Viudo/a":
+                    estadoCivilAbreviado = "V";
+                    break;
+                case "Union Libre":
+                    estadoCivilAbreviado = "UL";
+                    break;
+                default:
+                    estadoCivilAbreviado = ""; // Manejar casos no válidos
+            }
+
+            // Reemplazar el estado civil en formData
+            formData.set('estado_civil', estadoCivilAbreviado);
+
+            // Enviar datos usando fetch
+            fetch('/guardar', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            // Verificar si la respuesta no es correcta
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error || 'Error desconocido'); // Usa 'error' en lugar de 'message'
+                });
+            }
+            return response.json(); // Esta línea se ejecuta solo si la respuesta es exitosa
+        })
+        .then(data => {
+            console.log('Respuesta del servidor:', data);
+            
+            // Verifica si la respuesta tiene la propiedad 'Respuesta'
+            if (data.Respuesta === "OK") {
+                alert('Registro guardado correctamente.');
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('menu') }}";
+                }, 3000);
+            } else {
+                alert('Error al guardar el registro: ' + (data.error || "Error desconocido.")); // Usa 'error' aquí
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al guardar el registro: ' + error.message); // Asegúrate de que 'message' siempre esté definido
+        });
+
+
+
+
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

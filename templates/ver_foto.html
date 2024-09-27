@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Foto</title>
+</head>
+<body>
+    <h1>Foto del Creyente</h1>
+    {% if image_url %}
+        <img src="{{ image_url }}" alt="Foto del Creyente" style="width:300px;height:auto;">
+    {% else %}
+        <p>No se encontró la foto.</p>
+    {% endif %}
+    <a href="{{ url_for('listado') }}">Regresar al Listado</a>
+</body>
+</html>
